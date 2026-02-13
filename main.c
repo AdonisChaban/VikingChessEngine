@@ -2,6 +2,18 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
 
+typedef struct piece {
+  unsigned short x;
+  unsigned short y;
+} Piece;
+
+Piece white_pieces[8];
+
+Piece king; 
+
+Piece black_pieces[16];
+
+
 int main(){
   int redraw = 1;
   ALLEGRO_EVENT event;
@@ -47,7 +59,30 @@ int main(){
     }
   }
 
-  al_draw_filled_circle(225,225, 15, al_map_rgb(0,0,0));
+  // draw king inital position
+  al_draw_filled_triangle(210, 210, 240, 210, 225, 240, al_map_rgb(240,255,240));
+  
+  // draw Swedes inital position
+  for(int x = 0; x < 2; x++){
+    al_draw_filled_circle(125 + x * 50, 225, 15, al_map_rgb(240,255,240));
+    al_draw_filled_circle(225, 125 + x *50, 15, al_map_rgb(240,255,240));
+    al_draw_filled_circle(325 - x * 50, 225, 15, al_map_rgb(240,255,240));
+    al_draw_filled_circle(225, 325 - x * 50, 15, al_map_rgb(240,255,240));
+  }
+
+  // draw muscovites initial position
+  for(int i = 0; i < 2; i++){
+    al_draw_filled_circle(225,75 + i * 300, 15, al_map_rgb(0,0,0));
+    al_draw_filled_circle(75 + i * 300, 225, 15, al_map_rgb(0,0,0));
+
+    for(int k = 0; k < 3; k++){
+      al_draw_filled_circle(175 + k*50, 25 + 400*i, 15, al_map_rgb(0,0,0));
+    }
+    
+    for(int k = 0; k < 3; k++){
+      al_draw_filled_circle(25+ 400*i, 175 + k*50, 15, al_map_rgb(0,0,0));
+    }
+  }
   
   al_flip_display();
   
