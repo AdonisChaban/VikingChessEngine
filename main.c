@@ -2,19 +2,16 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
 
-typedef struct piece {
-  unsigned short x;
-  unsigned short y;
-} Piece;
-
-Piece white_pieces[8];
-
-Piece king; 
-
-Piece black_pieces[16];
-
+/*
+  need to store where the pieces are stored
+  this can be done with an array or a bitfield
+  Bitfield is wierd since the board is 9 by 9
+  therefore the total size would be 81 bits
+  which is not of the power of two. 
+ */
 
 int main(){
+  int stop_game = 0;
   int redraw = 1;
   ALLEGRO_EVENT event;
   
@@ -48,7 +45,14 @@ int main(){
     return 1;
   }
 
+  ALLEGRO_EVENT_SOURCE* mouse = al_get_mouse_event_source();
+  if(!mouse){
+    printf("mouse event source is null\n");
+    return 1;
+  }
+
   al_register_event_source(event_queue, al_get_display_event_source(window));
+  al_register_event_source(event_queue, mouse);
 
   al_clear_to_color(al_map_rgb(245, 222, 179));
 
@@ -61,11 +65,11 @@ int main(){
 
   // draw king inital position
   al_draw_filled_triangle(210, 210, 240, 210, 225, 240, al_map_rgb(240,255,240));
-  
+   
   // draw Swedes inital position
   for(int x = 0; x < 2; x++){
     al_draw_filled_circle(125 + x * 50, 225, 15, al_map_rgb(240,255,240));
-    al_draw_filled_circle(225, 125 + x *50, 15, al_map_rgb(240,255,240));
+    al_draw_filled_circle(225, 125 + x * 50, 15, al_map_rgb(240,255,240));
     al_draw_filled_circle(325 - x * 50, 225, 15, al_map_rgb(240,255,240));
     al_draw_filled_circle(225, 325 - x * 50, 15, al_map_rgb(240,255,240));
   }
@@ -89,17 +93,35 @@ int main(){
 
   while(1){
     al_wait_for_event(event_queue, &event);
-    
-  
-    if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+
+    switch(event.type){
+    case ALLEGRO_EVENT_DISPLAY_CLOSE:
+      stop_game = 1;
+      break;
+
+    case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+      // is it on a piece or not
+      printf("x-coordinate: %d y-coordinate: %d \n", event.mouse.x, event.mouse.y);
+      break;
+
+    case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+      // move the piece then redraw
+
       break; 
+    default:
+      // printf("event type : %u occured\n", event.type);
     }
+  
+    if(stop_game) break;
+
+    
       
   }
 
 
   // Destroy
   al_destroy_display(window);
+  al_uninstall_mouse();
   al_destroy_event_queue(event_queue);
   al_shutdown_primitives_addon();
   
